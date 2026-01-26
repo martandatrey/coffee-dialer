@@ -89,11 +89,13 @@ class CoffeeService {
 
     generateClipboardText(params, extraData) {
         const { method, dose, water, temp, time, grind } = params;
-        const { rating, notes, shareUrl, filterType, selectedGrinder } = extraData;
+        const { rating, notes, shareUrl, filterType, selectedGrinder, roast, coffeeName } = extraData;
 
         const stars = "⭐".repeat(rating);
         const proTip = this.getProTip(method);
         const filterInfo = method.includes('AeroPress') ? `\n🔍 Filter: ${filterType}` : '';
+        const coffeeInfo = coffeeName ? `\n🫘 Beans: ${coffeeName}` : '';
+        const roastInfo = `\n🔥 Roast: ${roast}`;
 
         let grindInfo = `${grind}µm`;
         if (selectedGrinder && selectedGrinder !== 'NONE') {
@@ -102,7 +104,7 @@ class CoffeeService {
             grindInfo = `${grinderName}: ${converted} (${grind}µm)`;
         }
 
-        return `☕ Coffee Recipe: ${method}
+        return `☕ Coffee Recipe: ${method}${coffeeInfo}${roastInfo}
 ---------------------------
 🔹 Dose: ${dose}g
 💧 Water: ${water}ml (Ratio 1:${(water / dose).toFixed(1)})

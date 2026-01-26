@@ -38,6 +38,8 @@ const CoffeeDialer = () => {
         return localStorage.getItem(STORAGE_KEYS.NOTES) || "";
     });
 
+    const [coffeeName, setCoffeeName] = useState(""); // Name & Brand of beans
+
     // Derived State for Ratio
     const currentPresetRatio = PRESETS[method].ratio;
 
@@ -168,7 +170,7 @@ const CoffeeDialer = () => {
 
     const handleShare = async () => {
         const params = { method, dose, water, temp, time, grind };
-        const extraData = { rating, notes: personalNotes, shareUrl: CoffeeService.generateShareUrl(params), filterType, selectedGrinder };
+        const extraData = { rating, notes: personalNotes, shareUrl: CoffeeService.generateShareUrl(params), filterType, selectedGrinder, roast, coffeeName };
 
         const clipboardText = CoffeeService.generateClipboardText(params, extraData);
 
@@ -220,8 +222,8 @@ const CoffeeDialer = () => {
                             key={r}
                             onClick={() => handleRoastChange(r)}
                             className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 text-xs font-bold rounded-lg transition-all whitespace-nowrap ${roast === r
-                                    ? 'bg-white text-coffee-800 shadow-sm ring-1 ring-coffee-100'
-                                    : 'text-coffee-400 hover:text-coffee-600'
+                                ? 'bg-white text-coffee-800 shadow-sm ring-1 ring-coffee-100'
+                                : 'text-coffee-400 hover:text-coffee-600'
                                 }`}
                         >
                             <Bean size={14} className={
@@ -490,6 +492,20 @@ const CoffeeDialer = () => {
                         <p className="text-blue-700 text-sm italic">
                             "{CoffeeService.getProTip(method)}"
                         </p>
+                    </div>
+
+                    {/* Coffee Name Input */}
+                    <div className="space-y-2">
+                        <label className="font-semibold text-coffee-800 flex items-center gap-2">
+                            <Bean size={18} /> Coffee Beans
+                        </label>
+                        <input
+                            type="text"
+                            value={coffeeName}
+                            onChange={(e) => setCoffeeName(e.target.value)}
+                            placeholder="e.g. Ethiopia Yirgacheffe (Blue Tokai)"
+                            className="w-full p-3 rounded-xl border border-coffee-200 focus:border-coffee-500 focus:ring-2 focus:ring-coffee-200 outline-none bg-coffee-50 text-coffee-900 placeholder:text-coffee-300 text-sm font-medium"
+                        />
                     </div>
 
                     {/* Rating */}
