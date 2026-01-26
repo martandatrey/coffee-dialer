@@ -8,12 +8,36 @@ export const PRESETS = {
 };
 
 export const PRO_TIPS = {
-    'Espresso': "Aim for a 25-30s extraction. Flow should look like warm honey/mouse tail.",
-    'AeroPress': "Insert plunger just enough to create a vacuum to stop drips. Press gently.",
-    'AeroPress + Flow Control': "Use the Prismo/Joepresso attachment. No inversion needed. Press firmly.",
-    'V60': "Pour in slow concentric circles. Avoid hitting the paper walls directly.",
-    'French Press': "Let the crust form on top. Break it gently at 4:00 before plunging.",
-    'Cold Brew': "Steep at room temp for 12-24 hours. Dilute concentrate 1:1 with water/milk.",
+    'Espresso': [
+        "Aim for a 25-30s extraction.",
+        "Flow should look like warm honey/mouse tail.",
+        "If it flows too fast, grind finer."
+    ],
+    'AeroPress': [
+        "Insert plunger just enough to create a vacuum to stop drips.",
+        "Press gently for 30 seconds.",
+        "Invert method allows for longer immersion time."
+    ],
+    'AeroPress + Flow Control': [
+        "Use the Prismo/Joepresso attachment.",
+        "No inversion needed with flow control cap.",
+        "Press firmly to generate more pressure."
+    ],
+    'V60': [
+        "Pour in slow concentric circles.",
+        "Avoid hitting the paper walls directly.",
+        "Bloom with 2-3x weight of grounds for 45s."
+    ],
+    'French Press': [
+        "Let the crust form on top for 4 minutes.",
+        "Break the crust gently before plunging.",
+        "Don't plunge all the way down to avoid stirring sediment."
+    ],
+    'Cold Brew': [
+        "Steep at room temp for 12-24 hours.",
+        "Dilute concentrate 1:1 with water/milk.",
+        "Use coarse grind to avoid bitterness."
+    ],
 };
 
 export const GRINDERS = {

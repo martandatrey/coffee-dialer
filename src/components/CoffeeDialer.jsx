@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine, Filter, Plus, Minus, Play, Pause, Square, Bean } from 'lucide-react';
+import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine, Filter, Plus, Minus, Play, Pause, Square, Bean, Lightbulb } from 'lucide-react';
 
 import SliderControl from './SliderControl';
 import CoffeeService from '../services/CoffeeService';
@@ -42,6 +42,21 @@ const CoffeeDialer = () => {
 
     // Derived State for Ratio
     const currentPresetRatio = PRESETS[method].ratio;
+
+    // Tips Rotation Logic
+    const [currentTipIndex, setCurrentTipIndex] = useState(0);
+    const tips = CoffeeService.getProTip(method);
+
+    useEffect(() => {
+        setCurrentTipIndex(0); // Reset when method changes
+    }, [method]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTipIndex((prev) => (prev + 1) % tips.length);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [tips.length]);
 
     // URL Hydration Logic
     useEffect(() => {
@@ -190,7 +205,7 @@ const CoffeeDialer = () => {
             <header className="mb-8 text-center w-full max-w-md bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-xl border border-coffee-100">
                 <h1 className="text-3xl font-bold text-coffee-800 flex items-center justify-center gap-3 mb-4">
                     <Coffee className="w-8 h-8" />
-                    Coffee Dialing Calculator
+                    Dialing and sharing your coffee
                 </h1>
 
                 {/* Method Selector */}
@@ -486,14 +501,6 @@ const CoffeeDialer = () => {
                         <BookOpen size={20} /> Brew Log
                     </h2>
 
-                    {/* Pro Tip */}
-                    <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-md">
-                        <h3 className="font-bold text-blue-800 text-sm mb-1 uppercase tracking-wider">💡 Pro Tip for {method}</h3>
-                        <p className="text-blue-700 text-sm italic">
-                            "{CoffeeService.getProTip(method)}"
-                        </p>
-                    </div>
-
                     {/* Coffee Name Input */}
                     <div className="space-y-2">
                         <label className="font-semibold text-coffee-800 flex items-center gap-2">
@@ -546,6 +553,60 @@ const CoffeeDialer = () => {
                     </div>
                 </div>
 
+            </div>
+
+            {/* Pro Tip Carousel Card */}
+            <div className="w-full max-w-md mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-6 border border-blue-100 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-10">
+                    <Lightbulb size={64} className="text-blue-600" />
+                </div>
+
+                <h3 className="font-bold text-blue-800 text-sm mb-3 uppercase tracking-wider flex items-center gap-2">
+                    <Lightbulb size={16} /> Pro Tips for {method}
+                </h3>
+
+                <div className="h-16 flex items-center">
+                    <p key={currentTipIndex} className="text-blue-900 text-lg font-medium italic animate-fade-in">
+                        "{tips[currentTipIndex]}"
+                    </p>
+                </div>
+
+                <div className="flex justify-center gap-1.5 mt-2">
+                    {tips.map((_, idx) => (
+                        <div
+                            key={idx}
+                            className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentTipIndex ? 'w-6 bg-blue-500' : 'w-1.5 bg-blue-200'
+                                }`}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            {/* Pro Tip Carousel Card */}
+            <div className="w-full max-w-md mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-6 border border-blue-100 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-10">
+                    <Lightbulb size={64} className="text-blue-600" />
+                </div>
+
+                <h3 className="font-bold text-blue-800 text-sm mb-3 uppercase tracking-wider flex items-center gap-2">
+                    <Lightbulb size={16} /> Pro Tips for {method}
+                </h3>
+
+                <div className="h-16 flex items-center">
+                    <p key={currentTipIndex} className="text-blue-900 text-lg font-medium italic animate-fade-in">
+                        "{tips[currentTipIndex]}"
+                    </p>
+                </div>
+
+                <div className="flex justify-center gap-1.5 mt-2">
+                    {tips.map((_, idx) => (
+                        <div
+                            key={idx}
+                            className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentTipIndex ? 'w-6 bg-blue-500' : 'w-1.5 bg-blue-200'
+                                }`}
+                        />
+                    ))}
+                </div>
             </div>
         </div>
     );

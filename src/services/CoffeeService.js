@@ -16,7 +16,7 @@ class CoffeeService {
     }
 
     getProTip(method) {
-        return PRO_TIPS[method] || "Enjoy your coffee!";
+        return PRO_TIPS[method] || ["Enjoy your coffee!"];
     }
 
     getFilterAdjustment(method, filterType) {
@@ -92,7 +92,8 @@ class CoffeeService {
         const { rating, notes, shareUrl, filterType, selectedGrinder, roast, coffeeName } = extraData;
 
         const stars = "⭐".repeat(rating);
-        const proTip = this.getProTip(method);
+        const tips = this.getProTip(method);
+        const proTip = Array.isArray(tips) ? tips[0] : tips;
         const filterInfo = method.includes('AeroPress') ? `\n🔍 Filter: ${filterType}` : '';
         const coffeeInfo = coffeeName ? `\n🫘 Beans: ${coffeeName}` : '';
         const roastInfo = `\n🔥 Roast: ${roast}`;
