@@ -446,13 +446,13 @@ const CoffeeDialer = () => {
                             <div className="grid grid-cols-2 gap-2">
                                 <button
                                     onClick={() => handleTasteAdjust('sour', 'low')}
-                                    className="bg-cream/10 hover:bg-cream/20 text-coffee-900 py-2 rounded-lg text-sm font-semibold transition-colors border border-cream/40"
+                                    className="bg-coffee-700 hover:bg-coffee-600 text-coffee-100 py-2 rounded-lg text-sm font-semibold transition-colors border border-coffee-600"
                                 >
                                     Slightly (+20µm)
                                 </button>
                                 <button
                                     onClick={() => handleTasteAdjust('sour', 'high')}
-                                    className="bg-cream text-coffee-900 py-2 rounded-lg text-sm font-semibold hover:bg-white transition-colors shadow-lg"
+                                    className="bg-coffee-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-coffee-500 transition-colors shadow-lg border border-coffee-500"
                                 >
                                     Very Sour (+75µm)
                                 </button>
