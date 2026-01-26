@@ -4,49 +4,51 @@ A premium, interactive tool to help you dial in the perfect cup of coffee. Built
 
 **[Launch App](https://martandatrey.github.io/coffee-dialer/)**
 
-## ✨ Features
+## ✨ Key Features
 
-### 🎛️ Interactive Controls
-- **Precision Sliders**: Fine-tune Dose, Water, Temperature, Time, and Grind Size.
-- **Grind Precision**: Adjustment steps of **15µm** (microns) for exact dialing.
-- **Micro-Adjustments**: Plus (+) and Minus (-) buttons for every parameter.
-- **Golden Ratio Lock**: Automatically adjusts water when you change the dose (and vice versa) to maintain the perfect specified ratio.
+### 🎛️ Interactive Dialing
+- **Smart Sliders**: Fine-tune **Dose**, **Water**, **Temperature**, **Time**, and **Grind Size**.
+- **Golden Ratio Lock 🔒**: Automatically calculates water when you change dose (or vice versa) to maintain the perfect ratio.
+- **Roast Level Selector**: 
+    - **Light**: Hotter brew, finer grind.
+    - **Medium**: Balanced default.
+    - **Medium Dark**: Slightly cooler, slightly coarser.
+    - **Dark**: Cooler water, coarser grind.
 
-### ☕️ Brewing Methods & Presets
-Intelligent defaults for popular brewing styles:
-- **Espresso**
-- **V60**
-- **French Press**
-- **Cold Brew**
-- **AeroPress**: Standard and Flow Control variants.
+### ⚙️ Grinder Conversions
+Stop guessing micron values! Select your specific grinder model to see exact **Clicks**, **Settings**, or **Dial Numbers**:
+- **1Zpresso**: K-Max, Q Series, J-Max, X-Pro
+- **Baratza**: Encore, Virtuoso+
+- **Comandante**: C40
+- **Timemore**: C2 / C3 / C3 ESP
+- **Kingrinder**: K6, K-Series
+- **Fellow**: Ode, Opus
+- **Eureka**: Mignon
 
-### 🔍 AeroPress Advanced Mode
-Specialized tools for AeroPress users:
-- **Flow Control Preset**: Optimized for Prismo/Joepresso attachments.
-- **Filter Type Toggle**:
-    - **Paper**: Standard grind profile.
-    - **Metal**: Auto-adjusts grind **finer** (-50µm) for cleaner body.
-    - **Both**: Auto-adjusts grind **coarser** (+50µm) for higher pressure resistance.
+### ⏱️ Integrated Tools
+- **Brew Timer**: Built-in stopwatch for your pour-over.
+- **Wake Lock**: Keeps your screen awake while the timer is running so your phone doesn't sleep mid-brew.
+- **AeroPress Advanced Mode**: Custom logic for **Metal** vs **Paper** filters (auto-adjusts grind size).
 
 ### 👅 Taste Profiler
-Dial in your brew based on taste:
-- **Too Sour?**: One-click adjustment to extract MORE (Finer grind, hotter temp, or longer time).
-- **Too Bitter?**: One-click adjustment to extract LESS (Coarser grind, cooler temp, or shorter time).
+Fix your coffee based on what you taste.
+- **Too Sour?** → One-click fix to extract MORE (Finer grind, hotter temp).
+- **Too Bitter?** → One-click fix to extract LESS (Coarser grind, cooler temp).
+- **Intensity Control**: Choose between "Slightly" or "Very" adjustments.
 
-### 📖 Brew Log & Persistence
-- **Rating System**: Rate your brews from 1 to 5 stars.
-- **Tasting Notes**: Personal journal for flavor notes (e.g., "Fruity acidity, heavy body").
-- **Pro Tips**: Method-specific advice displayed for every brew.
-- **Auto-Save**: Ratings and notes are persisted locally so you never lose them.
+### 📖 Journal & Sharing
+- **Brew Log**: Rate your cup (1-5 ⭐) and write tasting notes.
+- **Bean Tracking**: Input the exact coffee beans you are using.
+- **Rich Sharing**: Copies a formatted recipe with **Grinder Settings**, **Roast Level**, **Beans**, and a deep link to the app.
 
-### 🚀 Smart Sharing
-- **Deep Linking**: Share exact recipes via URL (e.g., `?m=V60&d=20&w=320`).
-- **Rich Clipboard Copy**: Generates a detailed text summary with your recipe, rating, notes, and a direct link to the app.
+## 🛠️ Configuration
+Power users can tune the app's internal logic!
+- Edit `src/config/tuningConfig.js` to change adjustment formulas, temperature steps, or filter offsets.
 
-## 🛠️ Tech Stack
+## 💻 Tech Stack
 - **Frontend**: React 19, Vite
-- **Styling**: Tailwind CSS, PostCSS
-- **Icons**: Lucide React
+- **Styling**: Tailwind CSS, PostCSS (Glassmorphism UI)
+- **State Management**: React Hooks + LocalStorage Persistence
 - **Deployment**: GitHub Pages
 
 ## 🚀 How to Run
@@ -56,12 +58,12 @@ Dial in your brew based on taste:
     npm install
     ```
 
-2.  **Start Development Server**:
+2.  **Start Dev Server**:
     ```bash
     npm run dev
     ```
 
-3.  **Deploy to GitHub Pages**:
+3.  **Deploy**:
     ```bash
     npm run deploy
     ```
