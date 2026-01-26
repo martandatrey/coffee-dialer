@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-coffee-50 text-slate-850 font-sans antialiased;
+  }
+}
