@@ -1,78 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine, Filter, Plus, Minus } from 'lucide-react';
 
-const PRESETS = {
-    'Espresso': { dose: 18, water: 36, ratio: 2, temp: 93, time: 30, grind: 300 },
-    'AeroPress': { dose: 15, water: 250, ratio: 16.6, temp: 90, time: 150, grind: 600 },
-    'AeroPress + Flow Control': { dose: 18, water: 250, ratio: 13.9, temp: 95, time: 240, grind: 400 },
-    'V60': { dose: 20, water: 320, ratio: 16, temp: 96, time: 180, grind: 800 },
-    'French Press': { dose: 30, water: 500, ratio: 16.6, temp: 95, time: 240, grind: 1200 },
-    'Cold Brew': { dose: 80, water: 800, ratio: 10, temp: 20, time: 43200, grind: 1600 },
-};
-
-const PRO_TIPS = {
-    'Espresso': "Aim for a 25-30s extraction. Flow should look like warm honey/mouse tail.",
-    'AeroPress': "Insert plunger just enough to create a vacuum to stop drips. Press gently.",
-    'AeroPress + Flow Control': "Use the Prismo/Joepresso attachment. No inversion needed. Press firmly.",
-    'V60': "Pour in slow concentric circles. Avoid hitting the paper walls directly.",
-    'French Press': "Let the crust form on top. Break it gently at 4:00 before plunging.",
-    'Cold Brew': "Steep at room temp for 12-24 hours. Dilute concentrate 1:1 with water/milk.",
-};
-
-// Reusable Slider Control Component
-const SliderControl = ({ label, icon: Icon, value, onChange, min, max, step, unit, description }) => {
-    const handleDecrement = () => {
-        const newValue = Math.max(min, value - step);
-        // Fix float precision issues for dose
-        onChange(step < 1 ? parseFloat(newValue.toFixed(1)) : Math.round(newValue));
-    };
-
-    const handleIncrement = () => {
-        const newValue = Math.min(max, value + step);
-        onChange(step < 1 ? parseFloat(newValue.toFixed(1)) : Math.round(newValue));
-    };
-
-    return (
-        <div className="space-y-3">
-            <div className="flex justify-between items-center">
-                <label className="flex items-center gap-2 font-semibold text-coffee-800">
-                    <Icon size={18} /> {label}
-                </label>
-                <span className="text-xl font-bold text-coffee-600">{value}{unit}</span>
-            </div>
-            <div className="flex items-center gap-3">
-                <button
-                    onClick={handleDecrement}
-                    className="p-2 rounded-full bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-colors active:scale-95"
-                    aria-label={`Decrease ${label}`}
-                >
-                    <Minus size={16} />
-                </button>
-                <input
-                    type="range"
-                    min={min}
-                    max={max}
-                    step={step}
-                    value={value}
-                    onChange={(e) => onChange(step < 1 ? parseFloat(e.target.value) : parseInt(e.target.value))}
-                    className="flex-1 h-2 bg-coffee-100 rounded-lg appearance-none cursor-pointer accent-coffee-600"
-                />
-                <button
-                    onClick={handleIncrement}
-                    className="p-2 rounded-full bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-colors active:scale-95"
-                    aria-label={`Increase ${label}`}
-                >
-                    <Plus size={16} />
-                </button>
-            </div>
-            {description && (
-                <div className="text-center text-sm font-medium text-coffee-500 bg-coffee-50 py-1 rounded-md">
-                    {description}
-                </div>
-            )}
-        </div>
-    );
-};
+import SliderControl from './SliderControl';
+import CoffeeService from '../services/CoffeeService';
+import { PRESETS } from '../constants/coffeeData';
+import { SLIDER_CONFIG, STORAGE_KEYS } from '../config/appConfig';
+import { formatTime, getGrindDescription } from '../utils/formatters';
 
 const CoffeeDialer = () => {
     // State
@@ -90,11 +23,11 @@ const CoffeeDialer = () => {
 
     // Brew Log State
     const [rating, setRating] = useState(() => {
-        const saved = localStorage.getItem('coffee-dialer-rating');
+        const saved = localStorage.getItem(STORAGE_KEYS.RATING);
         return saved ? parseInt(saved) : 0;
     });
     const [personalNotes, setPersonalNotes] = useState(() => {
-        return localStorage.getItem('coffee-dialer-notes') || "";
+        return localStorage.getItem(STORAGE_KEYS.NOTES) || "";
     });
 
     // Derived State for Ratio
@@ -119,16 +52,13 @@ const CoffeeDialer = () => {
         if (!isNaN(ti)) setTime(ti);
         if (!isNaN(g)) setGrind(g);
 
-        // If specific water/dose override provided, we might need to unlock ratio strictly speaking,
-        // but for now let's leave it as is or maybe check if it matches preset ratio.
-        // Simplification: just force unlock if they differ significantly from preset?
-        // Let's keep it simple: if URL params exist, we apply them.
+        // If specific water/dose override provided, we might need to apply them
     }, []);
 
     // Ratio Lock Logic
     useEffect(() => {
         if (ratioLocked) {
-            const newWater = Math.round(dose * currentPresetRatio);
+            const newWater = CoffeeService.calculateWater(dose, currentPresetRatio);
             if (Math.abs(newWater - water) > 1) {
                 setWater(newWater);
             }
@@ -149,101 +79,48 @@ const CoffeeDialer = () => {
 
     const handleFilterChange = (newFilter) => {
         setFilterType(newFilter);
-        const baseGrind = PRESETS[method].grind;
-        // Modifiers relative to base preset
-        if (newFilter === 'Metal') {
-            setGrind(Math.max(100, baseGrind - 50)); // Finer
-        } else if (newFilter === 'Both') {
-            setGrind(Math.min(1600, baseGrind + 50)); // Coarser
-        } else {
-            setGrind(baseGrind); // Reset to base (Paper)
-        }
+        const newGrind = CoffeeService.getFilterAdjustment(method, newFilter);
+        setGrind(newGrind);
     };
 
     const handleDoseChange = (newDose) => {
         setDose(newDose);
         if (ratioLocked) {
-            setWater(Math.round(newDose * currentPresetRatio));
+            setWater(CoffeeService.calculateWater(newDose, currentPresetRatio));
         }
     };
 
     const handleWaterChange = (newWater) => {
         setWater(newWater);
         if (ratioLocked) {
-            setDose(Math.round(newWater / currentPresetRatio));
+            setDose(CoffeeService.calculateDose(newWater, currentPresetRatio));
         }
     };
 
     // Taste Profiler Logic
     const handleTasteAdjust = (type) => {
-        if (type === 'sour') {
-            // Too Sour (Under-extracted) -> Extract MORE
-            // Priority: 1. Finer Grind (-50um), 2. Higher Temp, 3. Longer Time
-            if (grind > 100) {
-                setGrind(prev => Math.max(100, prev - 50));
-            } else if (temp < 100) {
-                setTemp(prev => prev + 2);
-            } else {
-                setTime(prev => prev + 15);
-            }
-        } else if (type === 'bitter') {
-            // Too Bitter (Over-extracted) -> Extract LESS
-            // Priority: 1. Coarser Grind (+50um), 2. Lower Temp, 3. Shorter Time
-            if (grind < 1600) {
-                setGrind(prev => Math.min(1600, prev + 50));
-            } else if (temp > 80) {
-                setTemp(prev => prev - 2);
-            } else {
-                setTime(prev => prev - 15);
-            }
-        }
-    };
+        const currentParams = { grind, temp, time };
+        const newParams = CoffeeService.adjustTasteProfile(type, currentParams);
 
-    const formatTime = (seconds) => {
-        const h = Math.floor(seconds / 3600);
-        const m = Math.floor((seconds % 3600) / 60);
-        const s = seconds % 60;
-        if (h > 0) return `${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
-        return `${m}:${s < 10 ? '0' : ''}${s}`;
-    };
-
-    const getGrindDescription = (microns) => {
-        if (microns <= 400) return "Fine";
-        if (microns <= 800) return "Medium-Fine";
-        if (microns <= 1100) return "Medium";
-        if (microns <= 1400) return "Medium-Coarse";
-        return "Coarse";
+        setGrind(newParams.grind);
+        setTemp(newParams.temp);
+        setTime(newParams.time);
     };
 
     // Persistence Logic
     useEffect(() => {
-        localStorage.setItem('coffee-dialer-rating', rating);
+        localStorage.setItem(STORAGE_KEYS.RATING, rating);
     }, [rating]);
 
     useEffect(() => {
-        localStorage.setItem('coffee-dialer-notes', personalNotes);
+        localStorage.setItem(STORAGE_KEYS.NOTES, personalNotes);
     }, [personalNotes]);
 
     const handleShare = async () => {
-        const shareUrl = `${window.location.origin}${window.location.pathname}?m=${encodeURIComponent(method)}&d=${dose}&w=${water}&tm=${temp}&ti=${time}&g=${grind}`;
-        const dialSetting = Math.round((grind - 100) / 10);
-        const stars = "⭐".repeat(rating);
-        const proTipVariable = PRO_TIPS[method] || "Enjoy your coffee!";
-        const filterInfo = method.includes('AeroPress') ? `\n🔍 Filter: ${filterType}` : '';
+        const params = { method, dose, water, temp, time, grind };
+        const extraData = { rating, notes: personalNotes, shareUrl: CoffeeService.generateShareUrl(params), filterType };
 
-        const clipboardText = `☕ Coffee Recipe: ${method}
----------------------------
-🔹 Dose: ${dose}g
-💧 Water: ${water}ml (Ratio 1:${(water / dose).toFixed(1)})
-🔥 Temp: ${temp}°C
-⏳ Time: ${formatTime(time)}
-⚙️ Grind: ${grind}µm (DF54 Dial: ~${dialSetting})${filterInfo}
----------------------------
-📊 Rating: ${stars} (${rating}/5)
-📝 Notes: ${personalNotes}
-💡 Pro Tip: ${proTipVariable}
----------------------------
-🔗 Open App: ${shareUrl}`;
+        const clipboardText = CoffeeService.generateClipboardText(params, extraData);
 
         try {
             await navigator.clipboard.writeText(clipboardText);
@@ -348,10 +225,7 @@ const CoffeeDialer = () => {
                         icon={Settings}
                         value={dose}
                         onChange={handleDoseChange}
-                        min={5}
-                        max={100}
-                        step={0.5}
-                        unit="g"
+                        {...SLIDER_CONFIG.DOSE}
                     />
 
                     {/* Water */}
@@ -360,10 +234,7 @@ const CoffeeDialer = () => {
                         icon={Droplets}
                         value={water}
                         onChange={handleWaterChange}
-                        min={20}
-                        max={1500}
-                        step={5}
-                        unit="ml"
+                        {...SLIDER_CONFIG.WATER}
                     />
 
                     {/* Grind Size (Microns) */}
@@ -372,10 +243,7 @@ const CoffeeDialer = () => {
                         icon={Settings}
                         value={grind}
                         onChange={setGrind}
-                        min={100}
-                        max={1600}
-                        step={15} /* Updated to 15µm */
-                        unit="µm"
+                        {...SLIDER_CONFIG.GRIND}
                         description={getGrindDescription(grind)}
                     />
 
@@ -385,10 +253,7 @@ const CoffeeDialer = () => {
                         icon={Thermometer}
                         value={temp}
                         onChange={setTemp}
-                        min={20}
-                        max={100}
-                        step={1}
-                        unit="°C"
+                        {...SLIDER_CONFIG.TEMP}
                     />
 
                     {/* Brew Time */}
@@ -401,22 +266,22 @@ const CoffeeDialer = () => {
                         </div>
                         <div className="flex items-center gap-3">
                             <button
-                                onClick={() => setTime(Math.max(10, time - 5))}
+                                onClick={() => setTime(Math.max(SLIDER_CONFIG.TIME.min, time - SLIDER_CONFIG.TIME.step))}
                                 className="p-2 rounded-full bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-colors active:scale-95"
                             >
                                 <Minus size={16} />
                             </button>
                             <input
                                 type="range"
-                                min="10"
-                                max="600"
-                                step="5"
+                                min={SLIDER_CONFIG.TIME.min}
+                                max={SLIDER_CONFIG.TIME.max}
+                                step={SLIDER_CONFIG.TIME.step}
                                 value={time}
                                 onChange={(e) => setTime(parseInt(e.target.value))}
                                 className="flex-1 h-2 bg-coffee-100 rounded-lg appearance-none cursor-pointer accent-coffee-600"
                             />
                             <button
-                                onClick={() => setTime(Math.min(600, time + 5))}
+                                onClick={() => setTime(Math.min(SLIDER_CONFIG.TIME.max, time + SLIDER_CONFIG.TIME.step))}
                                 className="p-2 rounded-full bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-colors active:scale-95"
                             >
                                 <Plus size={16} />
@@ -462,7 +327,7 @@ const CoffeeDialer = () => {
                     <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r-md">
                         <h3 className="font-bold text-blue-800 text-sm mb-1 uppercase tracking-wider">💡 Pro Tip for {method}</h3>
                         <p className="text-blue-700 text-sm italic">
-                            "{PRO_TIPS[method] || "Enjoy your brew!"}"
+                            "{CoffeeService.getProTip(method)}"
                         </p>
                     </div>
 

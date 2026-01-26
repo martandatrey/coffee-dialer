@@ -1,0 +1,17 @@
+export const PRESETS = {
+    'Espresso': { dose: 18, water: 36, ratio: 2, temp: 93, time: 30, grind: 300 },
+    'AeroPress': { dose: 15, water: 250, ratio: 16.6, temp: 90, time: 150, grind: 600 },
+    'AeroPress + Flow Control': { dose: 18, water: 250, ratio: 13.9, temp: 95, time: 240, grind: 400 },
+    'V60': { dose: 20, water: 320, ratio: 16, temp: 96, time: 180, grind: 800 },
+    'French Press': { dose: 30, water: 500, ratio: 16.6, temp: 95, time: 240, grind: 1200 },
+    'Cold Brew': { dose: 80, water: 800, ratio: 10, temp: 20, time: 43200, grind: 1600 },
+};
+
+export const PRO_TIPS = {
+    'Espresso': "Aim for a 25-30s extraction. Flow should look like warm honey/mouse tail.",
+    'AeroPress': "Insert plunger just enough to create a vacuum to stop drips. Press gently.",
+    'AeroPress + Flow Control': "Use the Prismo/Joepresso attachment. No inversion needed. Press firmly.",
+    'V60': "Pour in slow concentric circles. Avoid hitting the paper walls directly.",
+    'French Press': "Let the crust form on top. Break it gently at 4:00 before plunging.",
+    'Cold Brew': "Steep at room temp for 12-24 hours. Dilute concentrate 1:1 with water/milk.",
+};
