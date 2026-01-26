@@ -203,9 +203,16 @@ const CoffeeDialer = () => {
     return (
         <div className="min-h-screen p-4 md:p-8 flex flex-col items-center font-sans text-slate-850">
             <header className="mb-8 text-center w-full max-w-md bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-xl border border-coffee-100">
-                <h1 className="text-3xl font-bold text-coffee-800 flex items-center justify-center gap-3 mb-4">
-                    <Coffee className="w-8 h-8" />
-                    Dialing and sharing your coffee
+                <h1 className="text-3xl font-bold text-coffee-800 flex flex-col items-center justify-center gap-2 mb-4">
+                    <div className="flex items-center gap-3">
+                        <Coffee className="w-8 h-8" />
+                        Coffee Recipe
+                    </div>
+                    {coffeeName && (
+                        <span className="text-lg font-medium text-coffee-600 animate-fade-in">
+                            {coffeeName}
+                        </span>
+                    )}
                 </h1>
 
                 {/* Method Selector */}
@@ -525,10 +532,10 @@ const CoffeeDialer = () => {
                                 <button
                                     key={star}
                                     onClick={() => setRating(star)}
-                                    className={`text-xl transition-transform hover:scale-110 focus:outline-none ${star <= rating ? 'text-yellow-400' : 'text-gray-300'
+                                    className={`text-2xl transition-transform hover:scale-110 focus:outline-none ${star <= rating ? 'text-yellow-400' : 'text-gray-300'
                                         }`}
                                 >
-                                    <Star size={20} fill={star <= rating ? "currentColor" : "none"} strokeWidth={star <= rating ? 0 : 2} />
+                                    <Star size={28} fill={star <= rating ? "currentColor" : "none"} strokeWidth={star <= rating ? 0 : 2} />
                                 </button>
                             ))}
                             <div className="w-full text-center mt-1">
@@ -553,62 +560,77 @@ const CoffeeDialer = () => {
                     </div>
                 </div>
 
+                {/* Bottom Share Button */}
+                <button
+                    onClick={handleShare}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold bg-coffee-600 text-white hover:bg-coffee-700 transition-colors shadow-lg active:scale-95"
+                >
+                    {copySuccess ? (
+                        <>✅ Copied!</>
+                    ) : (
+                        <>
+                            <Share size={18} /> Share Recipe
+                        </>
+                    )}
+                </button>
             </div>
 
-            {/* Pro Tip Carousel Card */}
-            <div className="w-full max-w-md mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-6 border border-blue-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <Lightbulb size={64} className="text-blue-600" />
-                </div>
-
-                <h3 className="font-bold text-blue-800 text-sm mb-3 uppercase tracking-wider flex items-center gap-2">
-                    <Lightbulb size={16} /> Pro Tips for {method}
-                </h3>
-
-                <div className="h-16 flex items-center">
-                    <p key={currentTipIndex} className="text-blue-900 text-lg font-medium italic animate-fade-in">
-                        "{tips[currentTipIndex]}"
-                    </p>
-                </div>
-
-                <div className="flex justify-center gap-1.5 mt-2">
-                    {tips.map((_, idx) => (
-                        <div
-                            key={idx}
-                            className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentTipIndex ? 'w-6 bg-blue-500' : 'w-1.5 bg-blue-200'
-                                }`}
-                        />
-                    ))}
-                </div>
-            </div>
-
-            {/* Pro Tip Carousel Card */}
-            <div className="w-full max-w-md mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-6 border border-blue-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <Lightbulb size={64} className="text-blue-600" />
-                </div>
-
-                <h3 className="font-bold text-blue-800 text-sm mb-3 uppercase tracking-wider flex items-center gap-2">
-                    <Lightbulb size={16} /> Pro Tips for {method}
-                </h3>
-
-                <div className="h-16 flex items-center">
-                    <p key={currentTipIndex} className="text-blue-900 text-lg font-medium italic animate-fade-in">
-                        "{tips[currentTipIndex]}"
-                    </p>
-                </div>
-
-                <div className="flex justify-center gap-1.5 mt-2">
-                    {tips.map((_, idx) => (
-                        <div
-                            key={idx}
-                            className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentTipIndex ? 'w-6 bg-blue-500' : 'w-1.5 bg-blue-200'
-                                }`}
-                        />
-                    ))}
-                </div>
-            </div>
         </div>
+
+            {/* Pro Tip Carousel Card */ }
+    <div className="w-full max-w-md mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-6 border border-blue-100 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4 opacity-10">
+            <Lightbulb size={64} className="text-blue-600" />
+        </div>
+
+        <h3 className="font-bold text-blue-800 text-sm mb-3 uppercase tracking-wider flex items-center gap-2">
+            <Lightbulb size={16} /> Pro Tips for {method}
+        </h3>
+
+        <div className="h-16 flex items-center">
+            <p key={currentTipIndex} className="text-blue-900 text-lg font-medium italic animate-fade-in">
+                "{tips[currentTipIndex]}"
+            </p>
+        </div>
+
+        <div className="flex justify-center gap-1.5 mt-2">
+            {tips.map((_, idx) => (
+                <div
+                    key={idx}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentTipIndex ? 'w-6 bg-blue-500' : 'w-1.5 bg-blue-200'
+                        }`}
+                />
+            ))}
+        </div>
+    </div>
+
+    {/* Pro Tip Carousel Card */ }
+    <div className="w-full max-w-md mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-xl p-6 border border-blue-100 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4 opacity-10">
+            <Lightbulb size={64} className="text-blue-600" />
+        </div>
+
+        <h3 className="font-bold text-blue-800 text-sm mb-3 uppercase tracking-wider flex items-center gap-2">
+            <Lightbulb size={16} /> Pro Tips for {method}
+        </h3>
+
+        <div className="h-16 flex items-center">
+            <p key={currentTipIndex} className="text-blue-900 text-lg font-medium italic animate-fade-in">
+                "{tips[currentTipIndex]}"
+            </p>
+        </div>
+
+        <div className="flex justify-center gap-1.5 mt-2">
+            {tips.map((_, idx) => (
+                <div
+                    key={idx}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentTipIndex ? 'w-6 bg-blue-500' : 'w-1.5 bg-blue-200'
+                        }`}
+                />
+            ))}
+        </div>
+    </div>
+        </div >
     );
 };
 
