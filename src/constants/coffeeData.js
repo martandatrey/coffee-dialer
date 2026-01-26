@@ -4,7 +4,16 @@ export const PRESETS = {
     'AeroPress + Flow Control': { dose: 18, water: 250, ratio: 13.9, temp: 95, time: 240, grind: 400 },
     'V60': { dose: 20, water: 320, ratio: 16, temp: 96, time: 180, grind: 800 },
     'French Press': { dose: 30, water: 500, ratio: 16.6, temp: 95, time: 240, grind: 1200 },
+    'Moka Pot': { dose: 18, water: 180, ratio: 10, temp: 99, time: 300, grind: 500 },
     'Cold Brew': { dose: 80, water: 800, ratio: 10, temp: 20, time: 43200, grind: 1600 },
+};
+
+export const MOKA_SIZES = {
+    '1-cup': { dose: 7, water: 60 },
+    '3-cup': { dose: 18, water: 180 },
+    '6-cup': { dose: 32, water: 300 },
+    '9-cup': { dose: 50, water: 550 },
+    '12-cup': { dose: 70, water: 775 },
 };
 
 export const PRO_TIPS = {
@@ -32,6 +41,11 @@ export const PRO_TIPS = {
         "Let the crust form on top for 4 minutes.",
         "Break the crust gently before plunging.",
         "Don't plunge all the way down to avoid stirring sediment."
+    ],
+    'Moka Pot': [
+        "Use hot water in the chamber to start.",
+        "Don't tamp the coffee, just level it.",
+        "Remove from heat as soon as it starts sputtering."
     ],
     'Cold Brew': [
         "Steep at room temp for 12-24 hours.",

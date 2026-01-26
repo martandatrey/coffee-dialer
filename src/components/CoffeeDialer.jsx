@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine, Filter, Plus, Minus, Play, Pause, Square, Bean, Lightbulb } from 'lucide-react';
+import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine, Filter, Plus, Minus, Play, Pause, Square, Bean, Lightbulb, Mail } from 'lucide-react';
 
 import SliderControl from './SliderControl';
 import CoffeeService from '../services/CoffeeService';
-import { PRESETS, GRINDERS } from '../constants/coffeeData';
+import { PRESETS, GRINDERS, MOKA_SIZES } from '../constants/coffeeData';
 import { SLIDER_CONFIG, STORAGE_KEYS } from '../config/appConfig';
 import { formatTime, getGrindDescription } from '../utils/formatters';
 
@@ -28,6 +28,9 @@ const CoffeeDialer = () => {
 
     // AeroPress Specific State
     const [filterType, setFilterType] = useState('Paper'); // Paper, Metal, Both
+
+    // Moka Pot Specific State
+    const [mokaSize, setMokaSize] = useState('3-cup');
 
     // Brew Log State
     const [rating, setRating] = useState(() => {
@@ -99,7 +102,17 @@ const CoffeeDialer = () => {
         setTime(p.time);
         setGrind(p.grind);
         setFilterType('Paper'); // Reset filter when changing method
+        setFilterType('Paper'); // Reset filter when changing method
+        setMokaSize('3-cup'); // Reset moka size
         setRatioLocked(true); // Re-lock when changing method
+    };
+
+    const handleMokaSizeChange = (newSize) => {
+        setMokaSize(newSize);
+        const config = MOKA_SIZES[newSize];
+        setDose(config.dose);
+        setWater(config.water);
+        setRatioLocked(true);
     };
 
     const handleFilterChange = (newFilter) => {
@@ -317,6 +330,32 @@ const CoffeeDialer = () => {
                             {filterType === 'Metal' ? 'Grind adjusted finer (-50µm) for metal flow.' :
                                 filterType === 'Both' ? 'Grind adjusted coarser (+50µm) for higher resistance.' :
                                     'Standard grind for paper filter.'}
+                        </p>
+                    </div>
+                )}
+
+                {/* Moka Pot Size Selector */}
+                {method === 'Moka Pot' && (
+                    <div className="bg-white rounded-2xl shadow-xl p-6 border border-coffee-100 animate-fade-in">
+                        <label className="flex items-center gap-2 font-semibold text-coffee-800 mb-3">
+                            <Settings size={18} /> Moka Pot Size
+                        </label>
+                        <div className="grid grid-cols-3 gap-2 bg-coffee-50 p-2 rounded-xl">
+                            {Object.keys(MOKA_SIZES).map((size) => (
+                                <button
+                                    key={size}
+                                    onClick={() => handleMokaSizeChange(size)}
+                                    className={`py-2 text-xs font-bold rounded-lg transition-all ${mokaSize === size
+                                        ? 'bg-white text-coffee-700 shadow-sm'
+                                        : 'text-coffee-400 hover:text-coffee-600'
+                                        }`}
+                                >
+                                    {size}
+                                </button>
+                            ))}
+                        </div>
+                        <p className="text-xs text-coffee-400 mt-2 text-center italic">
+                            Auto-adjusts dose and water based on pot size.
                         </p>
                     </div>
                 )}
@@ -601,7 +640,17 @@ const CoffeeDialer = () => {
                     ))}
                 </div>
             </div>
-        </div>
+
+            {/* Feedback Button */}
+            <div className="mt-8 mb-4">
+                <a
+                    href="mailto:martandatrey@gmail.com?subject=Coffee%20Dialer%20Feedback"
+                    className="flex items-center gap-2 text-coffee-400 hover:text-coffee-600 text-sm font-medium transition-colors"
+                >
+                    <Mail size={16} /> Send Feedback to Developer
+                </a>
+            </div>
+        </div >
     );
 };
 
