@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine, Filter, Plus, Minus } from 'lucide-react';
+import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine, Filter, Plus, Minus, Play, Pause, Square } from 'lucide-react';
 
 import SliderControl from './SliderControl';
 import CoffeeService from '../services/CoffeeService';
@@ -18,7 +18,10 @@ const CoffeeDialer = () => {
     const [grind, setGrind] = useState(PRESETS['V60'].grind); // Microns
     const [copySuccess, setCopySuccess] = useState(false);
 
-
+    // Brew Timer State
+    const [isTimerRunning, setIsTimerRunning] = useState(false);
+    const [timerSeconds, setTimerSeconds] = useState(0);
+    const [wakeLock, setWakeLock] = useState(null);
     // Grinder State
     const [selectedGrinder, setSelectedGrinder] = useState('NONE');
 
@@ -101,10 +104,36 @@ const CoffeeDialer = () => {
         }
     };
 
+    // Timer Logic & Wake Lock
+    useEffect(() => {
+        let interval = null;
+        if (isTimerRunning) {
+            interval = setInterval(() => {
+                setTimerSeconds((seconds) => seconds + 1);
+            }, 1000);
+
+            // Request Wake Lock
+            if ('wakeLock' in navigator && !wakeLock) {
+                navigator.wakeLock.request('screen')
+                    .then((lock) => setWakeLock(lock))
+                    .catch((err) => console.log('Wake Lock Error:', err));
+            }
+        } else {
+            clearInterval(interval);
+            // Release Wake Lock
+            if (wakeLock) {
+                wakeLock.release().then(() => setWakeLock(null));
+            }
+        }
+        return () => clearInterval(interval);
+    }, [isTimerRunning, wakeLock]);
+
+
+
     // Taste Profiler Logic
-    const handleTasteAdjust = (type) => {
+    const handleTasteAdjust = (type, intensity) => {
         const currentParams = { grind, temp, time };
-        const newParams = CoffeeService.adjustTasteProfile(type, currentParams);
+        const newParams = CoffeeService.adjustTasteProfile(type, currentParams, intensity);
 
         setGrind(newParams.grind);
         setTemp(newParams.temp);
@@ -308,6 +337,45 @@ const CoffeeDialer = () => {
                                 <Plus size={16} />
                             </button>
                         </div>
+
+                        {/* Brew Timer Button */}
+                        <button
+                            onClick={() => setIsTimerRunning(!isTimerRunning)}
+                            className={`w-full mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all shadow-md ${isTimerRunning
+                                ? 'bg-red-100 text-red-600 hover:bg-red-200 border border-red-200'
+                                : 'bg-coffee-100 text-coffee-800 hover:bg-coffee-200 border border-coffee-200'
+                                }`}
+                        >
+                            {isTimerRunning ? <Pause size={18} /> : <Play size={18} />}
+                            {isTimerRunning ? 'Stop Timer' : 'Start Brew Timer'}
+                        </button>
+
+                        {/* Active Timer Overlay */}
+                        {timerSeconds > 0 && (
+                            <div className="mt-4 bg-coffee-900 rounded-xl p-4 text-center text-white border border-coffee-700 animate-fade-in relative overflow-hidden">
+                                <p className="text-xs text-coffee-300 uppercase tracking-widest font-bold mb-1">Elapsed Time</p>
+                                <div className="text-4xl font-mono font-bold tracking-wider tabular-nums">
+                                    {formatTime(timerSeconds)}
+                                </div>
+                                <div className="flex justify-center gap-4 mt-3">
+                                    <button
+                                        onClick={() => setIsTimerRunning(!isTimerRunning)}
+                                        className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                                    >
+                                        {isTimerRunning ? <Pause size={20} /> : <Play size={20} />}
+                                    </button>
+                                    <button
+                                        onClick={() => { setIsTimerRunning(false); setTimerSeconds(0); }}
+                                        className="p-2 rounded-full bg-white/10 hover:bg-red-500/50 transition-colors"
+                                    >
+                                        <Square size={20} />
+                                    </button>
+                                </div>
+                                <div className="absolute top-2 right-2">
+                                    {wakeLock ? <span className="text-[10px] bg-green-500/20 text-green-300 px-1.5 py-0.5 rounded-full border border-green-500/30">Screen Awake</span> : null}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                 </div>
@@ -318,23 +386,47 @@ const CoffeeDialer = () => {
                         <RotateCcw size={20} /> Dial In Your Taste
                     </h2>
                     <p className="text-coffee-100 mb-6 text-sm">
-                        Tasted your brew? Let us adjust the parameters for your next cup.
+                        How did it taste? Select intensity to adjust your next brew.
                     </p>
-                    <div className="grid grid-cols-2 gap-4">
-                        <button
-                            onClick={() => handleTasteAdjust('sour')}
-                            className="bg-cream text-coffee-900 py-3 px-4 rounded-xl font-bold hover:bg-white transition-colors shadow-lg active:scale-95"
-                        >
-                            Too Sour
-                            <span className="block text-xs font-normal text-coffee-700 mt-1">Under-extracted</span>
-                        </button>
-                        <button
-                            onClick={() => handleTasteAdjust('bitter')}
-                            className="bg-coffee-600 text-white py-3 px-4 rounded-xl font-bold hover:bg-coffee-500 transition-colors shadow-lg border border-coffee-500 active:scale-95"
-                        >
-                            Too Bitter
-                            <span className="block text-xs font-normal text-coffee-200 mt-1">Over-extracted</span>
-                        </button>
+
+                    <div className="space-y-4">
+                        {/* Sour Group */}
+                        <div className="space-y-2">
+                            <p className="text-xs font-bold text-cream uppercase tracking-wider">Too Sour (Under-extracted)</p>
+                            <div className="grid grid-cols-2 gap-2">
+                                <button
+                                    onClick={() => handleTasteAdjust('sour', 'low')}
+                                    className="bg-cream/10 hover:bg-cream/20 text-cream py-2 rounded-lg text-sm font-medium transition-colors border border-cream/20"
+                                >
+                                    Slightly (+20µm)
+                                </button>
+                                <button
+                                    onClick={() => handleTasteAdjust('sour', 'high')}
+                                    className="bg-cream text-coffee-900 py-2 rounded-lg text-sm font-bold hover:bg-white transition-colors shadow-lg"
+                                >
+                                    Very Sour (+75µm)
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Bitter Group */}
+                        <div className="space-y-2">
+                            <p className="text-xs font-bold text-coffee-300 uppercase tracking-wider">Too Bitter (Over-extracted)</p>
+                            <div className="grid grid-cols-2 gap-2">
+                                <button
+                                    onClick={() => handleTasteAdjust('bitter', 'low')}
+                                    className="bg-coffee-700 hover:bg-coffee-600 text-coffee-100 py-2 rounded-lg text-sm font-medium transition-colors border border-coffee-600"
+                                >
+                                    Slightly (-20µm)
+                                </button>
+                                <button
+                                    onClick={() => handleTasteAdjust('bitter', 'high')}
+                                    className="bg-coffee-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-coffee-500 transition-colors shadow-lg border border-coffee-500"
+                                >
+                                    Very Bitter (-75µm)
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

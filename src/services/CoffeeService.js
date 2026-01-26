@@ -43,14 +43,22 @@ class CoffeeService {
         }
     }
 
-    adjustTasteProfile(type, params) {
+    adjustTasteProfile(type, params, intensity = 'normal') {
         const { grind, temp, time } = params;
         const newParams = { ...params };
+
+        // Intensity Modifiers (Microns)
+        const adjustments = {
+            'low': 20,
+            'normal': 50,
+            'high': 75
+        };
+        const delta = adjustments[intensity] || 50;
 
         if (type === 'sour') {
             // Too Sour (Under-extracted) -> Extract MORE
             if (grind > 100) {
-                newParams.grind = Math.max(100, grind - 50);
+                newParams.grind = Math.max(100, grind - delta);
             } else if (temp < 100) {
                 newParams.temp = temp + 2;
             } else {
@@ -59,7 +67,7 @@ class CoffeeService {
         } else if (type === 'bitter') {
             // Too Bitter (Over-extracted) -> Extract LESS
             if (grind < 1600) {
-                newParams.grind = Math.min(1600, grind + 50);
+                newParams.grind = Math.min(1600, grind + delta);
             } else if (temp > 80) {
                 newParams.temp = temp - 2;
             } else {
