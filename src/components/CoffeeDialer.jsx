@@ -242,7 +242,13 @@ const CoffeeDialer = () => {
                         </select>
                     </div>
                     <button
-                        onClick={() => { handleMethodChange(method); setRoast('Medium'); }}
+                        onClick={() => {
+                            handleMethodChange(method);
+                            setRoast('Medium');
+                            setCoffeeName("");
+                            setRating(0);
+                            setPersonalNotes("");
+                        }}
                         className="bg-white p-3 rounded-xl shadow-md border border-coffee-100 text-coffee-600 hover:text-coffee-800 hover:bg-coffee-50 transition-colors"
                         title="Reset to Defaults"
                     >
@@ -641,16 +647,7 @@ const CoffeeDialer = () => {
                 </div>
             </div>
 
-            {/* Feedback Button */}
-            <div className="mt-8 mb-4">
-                <a
-                    href="mailto:martandatrey@gmail.com?subject=Coffee%20Dialer%20Feedback"
-                    className="flex items-center gap-2 text-coffee-400 hover:text-coffee-600 text-sm font-medium transition-colors"
-                >
-                    <Mail size={16} /> Send Feedback to Developer
-                </a>
-            </div>
-        </div >
+        </div>
     );
 };
 
