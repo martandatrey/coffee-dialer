@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine, Filter } from 'lucide-react';
+import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine, Filter, Plus, Minus } from 'lucide-react';
 
 const PRESETS = {
     'Espresso': { dose: 18, water: 36, ratio: 2, temp: 93, time: 30, grind: 300 },
@@ -17,6 +17,61 @@ const PRO_TIPS = {
     'V60': "Pour in slow concentric circles. Avoid hitting the paper walls directly.",
     'French Press': "Let the crust form on top. Break it gently at 4:00 before plunging.",
     'Cold Brew': "Steep at room temp for 12-24 hours. Dilute concentrate 1:1 with water/milk.",
+};
+
+// Reusable Slider Control Component
+const SliderControl = ({ label, icon: Icon, value, onChange, min, max, step, unit, description }) => {
+    const handleDecrement = () => {
+        const newValue = Math.max(min, value - step);
+        // Fix float precision issues for dose
+        onChange(step < 1 ? parseFloat(newValue.toFixed(1)) : Math.round(newValue));
+    };
+
+    const handleIncrement = () => {
+        const newValue = Math.min(max, value + step);
+        onChange(step < 1 ? parseFloat(newValue.toFixed(1)) : Math.round(newValue));
+    };
+
+    return (
+        <div className="space-y-3">
+            <div className="flex justify-between items-center">
+                <label className="flex items-center gap-2 font-semibold text-coffee-800">
+                    <Icon size={18} /> {label}
+                </label>
+                <span className="text-xl font-bold text-coffee-600">{value}{unit}</span>
+            </div>
+            <div className="flex items-center gap-3">
+                <button
+                    onClick={handleDecrement}
+                    className="p-2 rounded-full bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-colors active:scale-95"
+                    aria-label={`Decrease ${label}`}
+                >
+                    <Minus size={16} />
+                </button>
+                <input
+                    type="range"
+                    min={min}
+                    max={max}
+                    step={step}
+                    value={value}
+                    onChange={(e) => onChange(step < 1 ? parseFloat(e.target.value) : parseInt(e.target.value))}
+                    className="flex-1 h-2 bg-coffee-100 rounded-lg appearance-none cursor-pointer accent-coffee-600"
+                />
+                <button
+                    onClick={handleIncrement}
+                    className="p-2 rounded-full bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-colors active:scale-95"
+                    aria-label={`Increase ${label}`}
+                >
+                    <Plus size={16} />
+                </button>
+            </div>
+            {description && (
+                <div className="text-center text-sm font-medium text-coffee-500 bg-coffee-50 py-1 rounded-md">
+                    {description}
+                </div>
+            )}
+        </div>
+    );
 };
 
 const CoffeeDialer = () => {
@@ -288,83 +343,53 @@ const CoffeeDialer = () => {
                 <div className="bg-white rounded-2xl shadow-xl p-6 space-y-8 border border-coffee-100">
 
                     {/* Dose */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <label className="flex items-center gap-2 font-semibold text-coffee-800">
-                                <Settings size={18} /> Dose
-                            </label>
-                            <span className="text-xl font-bold text-coffee-600">{dose}g</span>
-                        </div>
-                        <input
-                            type="range"
-                            min="5"
-                            max="100"
-                            step="0.5"
-                            value={dose}
-                            onChange={(e) => handleDoseChange(parseFloat(e.target.value))}
-                            className="w-full h-2 bg-coffee-100 rounded-lg appearance-none cursor-pointer accent-coffee-600"
-                        />
-                    </div>
+                    <SliderControl
+                        label="Dose"
+                        icon={Settings}
+                        value={dose}
+                        onChange={handleDoseChange}
+                        min={5}
+                        max={100}
+                        step={0.5}
+                        unit="g"
+                    />
 
                     {/* Water */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <label className="flex items-center gap-2 font-semibold text-coffee-800">
-                                <Droplets size={18} /> Water
-                            </label>
-                            <span className="text-xl font-bold text-coffee-600">{water}ml</span>
-                        </div>
-                        <input
-                            type="range"
-                            min="20"
-                            max="1500"
-                            step="5"
-                            value={water}
-                            onChange={(e) => handleWaterChange(parseFloat(e.target.value))}
-                            className="w-full h-2 bg-coffee-100 rounded-lg appearance-none cursor-pointer accent-coffee-600"
-                        />
-                    </div>
+                    <SliderControl
+                        label="Water"
+                        icon={Droplets}
+                        value={water}
+                        onChange={handleWaterChange}
+                        min={20}
+                        max={1500}
+                        step={5}
+                        unit="ml"
+                    />
 
                     {/* Grind Size (Microns) */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <label className="flex items-center gap-2 font-semibold text-coffee-800">
-                                <Settings size={18} /> Grind Size
-                            </label>
-                            <span className="text-xl font-bold text-coffee-600">{grind}µm</span>
-                        </div>
-                        <input
-                            type="range"
-                            min="200"
-                            max="1600"
-                            step="50"
-                            value={grind}
-                            onChange={(e) => setGrind(parseInt(e.target.value))}
-                            className="w-full h-2 bg-coffee-100 rounded-lg appearance-none cursor-pointer accent-coffee-600"
-                        />
-                        <div className="text-center text-sm font-medium text-coffee-500 bg-coffee-50 py-1 rounded-md">
-                            {getGrindDescription(grind)}
-                        </div>
-                    </div>
+                    <SliderControl
+                        label="Grind Size"
+                        icon={Settings}
+                        value={grind}
+                        onChange={setGrind}
+                        min={200}
+                        max={1600}
+                        step={15} /* Updated to 15µm */
+                        unit="µm"
+                        description={getGrindDescription(grind)}
+                    />
 
                     {/* Temperature */}
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <label className="flex items-center gap-2 font-semibold text-coffee-800">
-                                <Thermometer size={18} /> Temperature
-                            </label>
-                            <span className="text-xl font-bold text-coffee-600">{temp}°C</span>
-                        </div>
-                        <input
-                            type="range"
-                            min="20"
-                            max="100"
-                            step="1"
-                            value={temp}
-                            onChange={(e) => setTemp(parseInt(e.target.value))}
-                            className="w-full h-2 bg-coffee-100 rounded-lg appearance-none cursor-pointer accent-coffee-600"
-                        />
-                    </div>
+                    <SliderControl
+                        label="Temperature"
+                        icon={Thermometer}
+                        value={temp}
+                        onChange={setTemp}
+                        min={20}
+                        max={100}
+                        step={1}
+                        unit="°C"
+                    />
 
                     {/* Brew Time */}
                     <div className="space-y-3">
@@ -374,15 +399,29 @@ const CoffeeDialer = () => {
                             </label>
                             <span className="text-xl font-bold text-coffee-600">{formatTime(time)}</span>
                         </div>
-                        <input
-                            type="range"
-                            min="10"
-                            max="600"
-                            step="5"
-                            value={time}
-                            onChange={(e) => setTime(parseInt(e.target.value))}
-                            className="w-full h-2 bg-coffee-100 rounded-lg appearance-none cursor-pointer accent-coffee-600"
-                        />
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => setTime(Math.max(10, time - 5))}
+                                className="p-2 rounded-full bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-colors active:scale-95"
+                            >
+                                <Minus size={16} />
+                            </button>
+                            <input
+                                type="range"
+                                min="10"
+                                max="600"
+                                step="5"
+                                value={time}
+                                onChange={(e) => setTime(parseInt(e.target.value))}
+                                className="flex-1 h-2 bg-coffee-100 rounded-lg appearance-none cursor-pointer accent-coffee-600"
+                            />
+                            <button
+                                onClick={() => setTime(Math.min(600, time + 5))}
+                                className="p-2 rounded-full bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-colors active:scale-95"
+                            >
+                                <Plus size={16} />
+                            </button>
+                        </div>
                     </div>
 
                 </div>
