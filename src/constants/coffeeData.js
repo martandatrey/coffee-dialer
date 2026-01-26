@@ -18,14 +18,28 @@ export const PRO_TIPS = {
 
 export const GRINDERS = {
     'NONE': { name: 'Microns (Default)', type: 'microns', convert: (m) => m },
+
+    // 1Zpresso
+    'KMAX': { name: '1Zpresso K-Max', type: 'setting', convert: (m) => (m / 22).toFixed(1) },
+    'Q_SERIES': { name: '1Zpresso Q/Q Air', type: 'setting', convert: (m) => (m / 25).toFixed(1) },
+
+    // Baratza
+    'ENCORE': { name: 'Baratza Encore', type: 'setting', convert: (m) => Math.min(40, Math.max(1, Math.round(m / 40))) },
+
+    // Comandante
+    'C40': { name: 'Comandante C40', type: 'clicks', convert: (m) => Math.round(m / 30) },
+
+    // DF Series
+    'DF54': { name: 'DF54 / DF64', type: 'dial', convert: (m) => Math.round((m - 100) / 10) },
+
+    // Fellow
+    'ODE': { name: 'Fellow Ode', type: 'setting', convert: (m) => Math.min(11, Math.max(1, (m / 100).toFixed(0))) },
+
+    // Kingrinder
     'K6': { name: 'Kingrinder K6', type: 'clicks', convert: (m) => Math.round(m / 16) },
     'K_SERIES': { name: 'Kingrinder K0-K5', type: 'clicks', convert: (m) => Math.round(m / 18) },
-    'C2_C3': { name: 'Timemore C2/C3/C3S', type: 'clicks', convert: (m) => Math.round(m / 25) }, // Standard C-series approx
-    'C3_ESP': { name: 'Timemore C3 ESP', type: 'clicks', convert: (m) => Math.round(m / 20) }, // Finer pitch
-    'Q_SERIES': { name: '1Zpresso Q/Q Air', type: 'setting', convert: (m) => (m / 25).toFixed(1) }, // 25 microns per click (numbered)
-    'DF54': { name: 'DF54 / DF64', type: 'dial', convert: (m) => Math.round((m - 100) / 10) },
-    'C40': { name: 'Comandante C40', type: 'clicks', convert: (m) => Math.round(m / 30) },
-    'ENCORE': { name: 'Baratza Encore', type: 'setting', convert: (m) => Math.min(40, Math.max(1, Math.round(m / 40))) },
-    'KMAX': { name: '1Zpresso K-Max', type: 'setting', convert: (m) => (m / 22).toFixed(1) },
-    'ODE': { name: 'Fellow Ode', type: 'setting', convert: (m) => Math.min(11, Math.max(1, (m / 100).toFixed(0))) },
+
+    // Timemore
+    'C2_C3': { name: 'Timemore C2/C3/C3S', type: 'clicks', convert: (m) => Math.round(m / 25) },
+    'C3_ESP': { name: 'Timemore C3 ESP', type: 'clicks', convert: (m) => Math.round(m / 20) },
 };
