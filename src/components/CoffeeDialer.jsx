@@ -151,7 +151,7 @@ const CoffeeDialer = () => {
 
     const handleShare = async () => {
         const params = { method, dose, water, temp, time, grind };
-        const extraData = { rating, notes: personalNotes, shareUrl: CoffeeService.generateShareUrl(params), filterType };
+        const extraData = { rating, notes: personalNotes, shareUrl: CoffeeService.generateShareUrl(params), filterType, selectedGrinder };
 
         const clipboardText = CoffeeService.generateClipboardText(params, extraData);
 
