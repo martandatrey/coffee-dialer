@@ -29,6 +29,10 @@ class CoffeeService {
         return baseGrind;
     }
 
+    getRoastAdjustment(roastLevel) {
+        return TUNING.ROAST_LEVELS[roastLevel] || TUNING.ROAST_LEVELS['Medium'];
+    }
+
     convertGrindSize(microns, grinderId) {
         const grinder = GRINDERS[grinderId];
         if (!grinder || grinderId === 'NONE') return null;

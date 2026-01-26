@@ -20,6 +20,13 @@ export const TUNING = {
         BOTH_OFFSET: 50    // Coarser for both
     },
 
+    // Roast Level Offsets (relative to Medium)
+    ROAST_LEVELS: {
+        'Light': { temp: 2, grind: -50 },  // Hotter, Finer
+        'Medium': { temp: 0, grind: 0 },   // Baseline
+        'Dark': { temp: -5, grind: 100 }    // Cooler, Coarser
+    },
+
     // Limits
     LIMITS: {
         MIN_GRIND: 100,

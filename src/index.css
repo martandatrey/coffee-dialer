@@ -13,8 +13,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
-    background-image: url('./assets/coffee_bg.png');
-    background-color: #f8fafc; /* Fallback */
+    background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('./assets/coffee_bg.png');
+    background-color: #f8fafc;
     background-repeat: repeat;
     background-size: 400px;
   }

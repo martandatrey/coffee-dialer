@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine, Filter, Plus, Minus, Play, Pause, Square } from 'lucide-react';
+import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine, Filter, Plus, Minus, Play, Pause, Square, Bean } from 'lucide-react';
 
 import SliderControl from './SliderControl';
 import CoffeeService from '../services/CoffeeService';
@@ -12,6 +12,7 @@ const CoffeeDialer = () => {
     const [method, setMethod] = useState('V60');
     const [dose, setDose] = useState(PRESETS['V60'].dose); // grams
     const [water, setWater] = useState(PRESETS['V60'].water); // ml/grams
+    const [roast, setRoast] = useState('Medium'); // Light, Medium, Dark
     const [ratioLocked, setRatioLocked] = useState(true);
     const [temp, setTemp] = useState(PRESETS['V60'].temp); // Celsius
     const [time, setTime] = useState(PRESETS['V60'].time); // Seconds
@@ -88,6 +89,22 @@ const CoffeeDialer = () => {
         setFilterType(newFilter);
         const newGrind = CoffeeService.getFilterAdjustment(method, newFilter);
         setGrind(newGrind);
+    };
+
+    const handleRoastChange = (newRoast) => {
+        setRoast(newRoast);
+        const adjustment = CoffeeService.getRoastAdjustment(newRoast);
+        const basePreset = PRESETS[method];
+
+        // Reset to base + adjustment
+        setTemp(Math.min(100, Math.max(80, basePreset.temp + adjustment.temp)));
+
+        // Handle Grind (careful not to overwrite filter logic if AP)
+        let baseGrind = basePreset.grind;
+        if (method.includes('AeroPress')) {
+            baseGrind = CoffeeService.getFilterAdjustment(method, filterType);
+        }
+        setGrind(Math.max(100, Math.min(1600, baseGrind + adjustment.grind)));
     };
 
     const handleDoseChange = (newDose) => {
@@ -168,15 +185,15 @@ const CoffeeDialer = () => {
 
     return (
         <div className="min-h-screen p-4 md:p-8 flex flex-col items-center font-sans text-slate-850">
-            <header className="mb-8 text-center w-full max-w-md">
+            <header className="mb-8 text-center w-full max-w-md bg-white/90 backdrop-blur-sm p-6 rounded-3xl shadow-xl border border-coffee-100">
                 <h1 className="text-3xl font-bold text-coffee-800 flex items-center justify-center gap-3 mb-4">
                     <Coffee className="w-8 h-8" />
                     Coffee Dialing Calculator
                 </h1>
 
                 {/* Method Selector */}
-                <div className="flex gap-2 justify-center items-center">
-                    <div className="bg-white p-2 rounded-xl shadow-md border border-coffee-100 flex-1">
+                <div className="flex gap-2 justify-center items-center mb-4">
+                    <div className="bg-coffee-50 p-2 rounded-xl shadow-inner border border-coffee-100 flex-1">
                         <select
                             value={method}
                             onChange={(e) => handleMethodChange(e.target.value)}
@@ -188,12 +205,29 @@ const CoffeeDialer = () => {
                         </select>
                     </div>
                     <button
-                        onClick={() => handleMethodChange(method)}
+                        onClick={() => { handleMethodChange(method); setRoast('Medium'); }}
                         className="bg-white p-3 rounded-xl shadow-md border border-coffee-100 text-coffee-600 hover:text-coffee-800 hover:bg-coffee-50 transition-colors"
                         title="Reset to Defaults"
                     >
                         <RotateCcw size={20} />
                     </button>
+                </div>
+
+                {/* Roast Selector */}
+                <div className="flex items-center justify-center gap-2 bg-coffee-50 p-1 rounded-xl">
+                    {['Light', 'Medium', 'Dark'].map((r) => (
+                        <button
+                            key={r}
+                            onClick={() => handleRoastChange(r)}
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${roast === r
+                                    ? 'bg-white text-coffee-800 shadow-sm ring-1 ring-coffee-100'
+                                    : 'text-coffee-400 hover:text-coffee-600'
+                                }`}
+                        >
+                            <Bean size={14} className={r === 'Light' ? 'text-amber-300' : r === 'Medium' ? 'text-amber-700' : 'text-slate-800'} fill="currentColor" />
+                            {r} Roast
+                        </button>
+                    ))}
                 </div>
             </header>
 
