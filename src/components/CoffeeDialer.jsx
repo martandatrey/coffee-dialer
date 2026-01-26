@@ -7,7 +7,7 @@ const PRESETS = {
     'AeroPress + Flow Control': { dose: 18, water: 250, ratio: 13.9, temp: 95, time: 240, grind: 400 },
     'V60': { dose: 20, water: 320, ratio: 16, temp: 96, time: 180, grind: 800 },
     'French Press': { dose: 30, water: 500, ratio: 16.6, temp: 95, time: 240, grind: 1200 },
-    'Cold Brew': { dose: 80, water: 800, ratio: 10, temp: 20, time: 43200, grind: 1600 },
+    'Cold Brew': { dose: 80, water: 800, ratio: 10, temp: 20, time: 43200, grind: 1200 },
 };
 
 const PRO_TIPS = {
@@ -152,9 +152,9 @@ const CoffeeDialer = () => {
         const baseGrind = PRESETS[method].grind;
         // Modifiers relative to base preset
         if (newFilter === 'Metal') {
-            setGrind(Math.max(200, baseGrind - 50)); // Finer
+            setGrind(Math.max(100, baseGrind - 50)); // Finer
         } else if (newFilter === 'Both') {
-            setGrind(Math.min(1600, baseGrind + 50)); // Coarser
+            setGrind(Math.min(1200, baseGrind + 50)); // Coarser
         } else {
             setGrind(baseGrind); // Reset to base (Paper)
         }
@@ -179,8 +179,8 @@ const CoffeeDialer = () => {
         if (type === 'sour') {
             // Too Sour (Under-extracted) -> Extract MORE
             // Priority: 1. Finer Grind (-50um), 2. Higher Temp, 3. Longer Time
-            if (grind > 200) {
-                setGrind(prev => Math.max(200, prev - 50));
+            if (grind > 100) {
+                setGrind(prev => Math.max(100, prev - 50));
             } else if (temp < 100) {
                 setTemp(prev => prev + 2);
             } else {
@@ -189,8 +189,8 @@ const CoffeeDialer = () => {
         } else if (type === 'bitter') {
             // Too Bitter (Over-extracted) -> Extract LESS
             // Priority: 1. Coarser Grind (+50um), 2. Lower Temp, 3. Shorter Time
-            if (grind < 1600) {
-                setGrind(prev => Math.min(1600, prev + 50));
+            if (grind < 1200) {
+                setGrind(prev => Math.min(1200, prev + 50));
             } else if (temp > 80) {
                 setTemp(prev => prev - 2);
             } else {
@@ -226,7 +226,7 @@ const CoffeeDialer = () => {
 
     const handleShare = async () => {
         const shareUrl = `${window.location.origin}${window.location.pathname}?m=${encodeURIComponent(method)}&d=${dose}&w=${water}&tm=${temp}&ti=${time}&g=${grind}`;
-        const dialSetting = Math.round((grind - 200) / 10);
+        const dialSetting = Math.round((grind - 100) / 10);
         const stars = "⭐".repeat(rating);
         const proTipVariable = PRO_TIPS[method] || "Enjoy your coffee!";
         const filterInfo = method.includes('AeroPress') ? `\n🔍 Filter: ${filterType}` : '';
@@ -372,8 +372,8 @@ const CoffeeDialer = () => {
                         icon={Settings}
                         value={grind}
                         onChange={setGrind}
-                        min={200}
-                        max={1600}
+                        min={100}
+                        max={1200}
                         step={15} /* Updated to 15µm */
                         unit="µm"
                         description={getGrindDescription(grind)}
