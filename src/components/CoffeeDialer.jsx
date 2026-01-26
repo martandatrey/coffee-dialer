@@ -214,18 +214,23 @@ const CoffeeDialer = () => {
                 </div>
 
                 {/* Roast Selector */}
-                <div className="flex items-center justify-center gap-2 bg-coffee-50 p-1 rounded-xl">
-                    {['Light', 'Medium', 'Dark'].map((r) => (
+                <div className="flex items-center justify-center gap-2 bg-coffee-50 p-1 rounded-xl overflow-x-auto">
+                    {['Light', 'Medium', 'Medium Dark', 'Dark'].map((r) => (
                         <button
                             key={r}
                             onClick={() => handleRoastChange(r)}
-                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-bold rounded-lg transition-all ${roast === r
+                            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 text-xs font-bold rounded-lg transition-all whitespace-nowrap ${roast === r
                                     ? 'bg-white text-coffee-800 shadow-sm ring-1 ring-coffee-100'
                                     : 'text-coffee-400 hover:text-coffee-600'
                                 }`}
                         >
-                            <Bean size={14} className={r === 'Light' ? 'text-amber-300' : r === 'Medium' ? 'text-amber-700' : 'text-slate-800'} fill="currentColor" />
-                            {r} Roast
+                            <Bean size={14} className={
+                                r === 'Light' ? 'text-amber-300' :
+                                    r === 'Medium' ? 'text-amber-600' :
+                                        r === 'Medium Dark' ? 'text-amber-900' :
+                                            'text-slate-800'
+                            } fill="currentColor" />
+                            {r}
                         </button>
                     ))}
                 </div>

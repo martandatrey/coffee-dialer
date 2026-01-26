@@ -24,6 +24,7 @@ export const TUNING = {
     ROAST_LEVELS: {
         'Light': { temp: 2, grind: -50 },  // Hotter, Finer
         'Medium': { temp: 0, grind: 0 },   // Baseline
+        'Medium Dark': { temp: -3, grind: 50 }, // Slightly Cooler, Coarser
         'Dark': { temp: -5, grind: 100 }    // Cooler, Coarser
     },
 
