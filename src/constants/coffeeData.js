@@ -15,3 +15,12 @@ export const PRO_TIPS = {
     'French Press': "Let the crust form on top. Break it gently at 4:00 before plunging.",
     'Cold Brew': "Steep at room temp for 12-24 hours. Dilute concentrate 1:1 with water/milk.",
 };
+
+export const GRINDERS = {
+    'NONE': { name: 'Microns (Default)', type: 'microns', convert: (m) => m },
+    'DF54': { name: 'DF54 / DF64', type: 'dial', convert: (m) => Math.round((m - 100) / 10) },
+    'C40': { name: 'Comandante C40', type: 'clicks', convert: (m) => Math.round(m / 30) },
+    'ENCORE': { name: 'Baratza Encore', type: 'setting', convert: (m) => Math.min(40, Math.max(1, Math.round(m / 40))) },
+    'KMAX': { name: '1Zpresso K-Max', type: 'setting', convert: (m) => (m / 22).toFixed(1) },
+    'ODE': { name: 'Fellow Ode', type: 'setting', convert: (m) => Math.min(11, Math.max(1, (m / 100).toFixed(0))) },
+};

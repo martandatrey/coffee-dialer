@@ -3,7 +3,7 @@ import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw
 
 import SliderControl from './SliderControl';
 import CoffeeService from '../services/CoffeeService';
-import { PRESETS } from '../constants/coffeeData';
+import { PRESETS, GRINDERS } from '../constants/coffeeData';
 import { SLIDER_CONFIG, STORAGE_KEYS } from '../config/appConfig';
 import { formatTime, getGrindDescription } from '../utils/formatters';
 
@@ -17,6 +17,10 @@ const CoffeeDialer = () => {
     const [time, setTime] = useState(PRESETS['V60'].time); // Seconds
     const [grind, setGrind] = useState(PRESETS['V60'].grind); // Microns
     const [copySuccess, setCopySuccess] = useState(false);
+
+
+    // Grinder State
+    const [selectedGrinder, setSelectedGrinder] = useState('NONE');
 
     // AeroPress Specific State
     const [filterType, setFilterType] = useState('Paper'); // Paper, Metal, Both
@@ -238,14 +242,31 @@ const CoffeeDialer = () => {
                     />
 
                     {/* Grind Size (Microns) */}
-                    <SliderControl
-                        label="Grind Size"
-                        icon={Settings}
-                        value={grind}
-                        onChange={setGrind}
-                        {...SLIDER_CONFIG.GRIND}
-                        description={getGrindDescription(grind)}
-                    />
+                    <div className="space-y-2">
+                        <div className="flex justify-end">
+                            <select
+                                value={selectedGrinder}
+                                onChange={(e) => setSelectedGrinder(e.target.value)}
+                                className="text-xs bg-white border border-coffee-200 text-coffee-600 rounded-lg px-2 py-1 outline-none font-medium cursor-pointer hover:border-coffee-400 focus:border-coffee-500 transition-colors"
+                            >
+                                {Object.entries(GRINDERS).map(([key, data]) => (
+                                    <option key={key} value={key}>{data.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <SliderControl
+                            label="Grind Size"
+                            icon={Settings}
+                            value={grind}
+                            onChange={setGrind}
+                            {...SLIDER_CONFIG.GRIND}
+                            description={
+                                selectedGrinder === 'NONE'
+                                    ? getGrindDescription(grind)
+                                    : `${CoffeeService.convertGrindSize(grind, selectedGrinder)} (${getGrindDescription(grind)})`
+                            }
+                        />
+                    </div>
 
                     {/* Temperature */}
                     <SliderControl

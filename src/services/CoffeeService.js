@@ -1,4 +1,4 @@
-import { PRESETS, PRO_TIPS } from '../constants/coffeeData';
+import { PRESETS, PRO_TIPS, GRINDERS } from '../constants/coffeeData';
 import { formatTime } from '../utils/formatters';
 
 class CoffeeService {
@@ -26,6 +26,21 @@ class CoffeeService {
             return Math.min(1600, baseGrind + 50); // Coarser
         }
         return baseGrind;
+    }
+
+    convertGrindSize(microns, grinderId) {
+        const grinder = GRINDERS[grinderId];
+        if (!grinder || grinderId === 'NONE') return null;
+
+        const value = grinder.convert(microns);
+
+        // Format based on type
+        switch (grinder.type) {
+            case 'clicks': return `${value} Clicks`;
+            case 'setting': return `Setting ${value}`;
+            case 'dial': return `Dial ~${value}`;
+            default: return `${value}`;
+        }
     }
 
     adjustTasteProfile(type, params) {
