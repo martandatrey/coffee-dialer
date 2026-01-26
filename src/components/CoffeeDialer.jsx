@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine } from 'lucide-react';
+import { Coffee, Droplets, Thermometer, Timer, Settings, Lock, Unlock, RotateCcw, Menu, Share, Star, BookOpen, PenLine, Filter } from 'lucide-react';
 
 const PRESETS = {
     'Espresso': { dose: 18, water: 36, ratio: 2, temp: 93, time: 30, grind: 300 },
     'AeroPress': { dose: 15, water: 250, ratio: 16.6, temp: 90, time: 150, grind: 600 },
+    'AeroPress + Flow Control': { dose: 18, water: 250, ratio: 13.9, temp: 95, time: 240, grind: 400 },
     'V60': { dose: 20, water: 320, ratio: 16, temp: 96, time: 180, grind: 800 },
     'French Press': { dose: 30, water: 500, ratio: 16.6, temp: 95, time: 240, grind: 1200 },
     'Cold Brew': { dose: 80, water: 800, ratio: 10, temp: 20, time: 43200, grind: 1600 },
@@ -12,6 +13,7 @@ const PRESETS = {
 const PRO_TIPS = {
     'Espresso': "Aim for a 25-30s extraction. Flow should look like warm honey/mouse tail.",
     'AeroPress': "Insert plunger just enough to create a vacuum to stop drips. Press gently.",
+    'AeroPress + Flow Control': "Use the Prismo/Joepresso attachment. No inversion needed. Press firmly.",
     'V60': "Pour in slow concentric circles. Avoid hitting the paper walls directly.",
     'French Press': "Let the crust form on top. Break it gently at 4:00 before plunging.",
     'Cold Brew': "Steep at room temp for 12-24 hours. Dilute concentrate 1:1 with water/milk.",
@@ -27,6 +29,9 @@ const CoffeeDialer = () => {
     const [time, setTime] = useState(PRESETS['V60'].time); // Seconds
     const [grind, setGrind] = useState(PRESETS['V60'].grind); // Microns
     const [copySuccess, setCopySuccess] = useState(false);
+
+    // AeroPress Specific State
+    const [filterType, setFilterType] = useState('Paper'); // Paper, Metal, Both
 
     // Brew Log State
     const [rating, setRating] = useState(() => {
@@ -51,6 +56,8 @@ const CoffeeDialer = () => {
         const g = parseInt(searchParams.get('g'));
 
         if (m && PRESETS[m]) setMethod(m);
+        // Note: Filter type is not hydrated for simplicity/lack of explicit request, but we could add it.
+        // For now, it will default to 'Paper' on load which is safe.
         if (!isNaN(d)) setDose(d);
         if (!isNaN(w)) setWater(w);
         if (!isNaN(tm)) setTemp(tm);
@@ -81,7 +88,21 @@ const CoffeeDialer = () => {
         setTemp(p.temp);
         setTime(p.time);
         setGrind(p.grind);
+        setFilterType('Paper'); // Reset filter when changing method
         setRatioLocked(true); // Re-lock when changing method
+    };
+
+    const handleFilterChange = (newFilter) => {
+        setFilterType(newFilter);
+        const baseGrind = PRESETS[method].grind;
+        // Modifiers relative to base preset
+        if (newFilter === 'Metal') {
+            setGrind(Math.max(200, baseGrind - 50)); // Finer
+        } else if (newFilter === 'Both') {
+            setGrind(Math.min(1600, baseGrind + 50)); // Coarser
+        } else {
+            setGrind(baseGrind); // Reset to base (Paper)
+        }
     };
 
     const handleDoseChange = (newDose) => {
@@ -153,6 +174,7 @@ const CoffeeDialer = () => {
         const dialSetting = Math.round((grind - 200) / 10);
         const stars = "⭐".repeat(rating);
         const proTipVariable = PRO_TIPS[method] || "Enjoy your coffee!";
+        const filterInfo = method.includes('AeroPress') ? `\n🔍 Filter: ${filterType}` : '';
 
         const clipboardText = `☕ Coffee Recipe: ${method}
 ---------------------------
@@ -160,7 +182,7 @@ const CoffeeDialer = () => {
 💧 Water: ${water}ml (Ratio 1:${(water / dose).toFixed(1)})
 🔥 Temp: ${temp}°C
 ⏳ Time: ${formatTime(time)}
-⚙️ Grind: ${grind}µm (DF54 Dial: ~${dialSetting})
+⚙️ Grind: ${grind}µm (DF54 Dial: ~${dialSetting})${filterInfo}
 ---------------------------
 📊 Rating: ${stars} (${rating}/5)
 📝 Notes: ${personalNotes}
@@ -233,6 +255,34 @@ const CoffeeDialer = () => {
                         )}
                     </button>
                 </div>
+
+                {/* AeroPress Filter Selector */}
+                {method.includes('AeroPress') && (
+                    <div className="bg-white rounded-2xl shadow-xl p-6 border border-coffee-100 animate-fade-in">
+                        <label className="flex items-center gap-2 font-semibold text-coffee-800 mb-3">
+                            <Filter size={18} /> Filter Type
+                        </label>
+                        <div className="flex bg-coffee-50 p-1 rounded-xl">
+                            {['Paper', 'Metal', 'Both'].map((ft) => (
+                                <button
+                                    key={ft}
+                                    onClick={() => handleFilterChange(ft)}
+                                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${filterType === ft
+                                        ? 'bg-white text-coffee-700 shadow-sm'
+                                        : 'text-coffee-400 hover:text-coffee-600'
+                                        }`}
+                                >
+                                    {ft}
+                                </button>
+                            ))}
+                        </div>
+                        <p className="text-xs text-coffee-400 mt-2 text-center italic">
+                            {filterType === 'Metal' ? 'Grind adjusted finer (-50µm) for metal flow.' :
+                                filterType === 'Both' ? 'Grind adjusted coarser (+50µm) for higher resistance.' :
+                                    'Standard grind for paper filter.'}
+                        </p>
+                    </div>
+                )}
 
                 {/* Controls */}
                 <div className="bg-white rounded-2xl shadow-xl p-6 space-y-8 border border-coffee-100">
