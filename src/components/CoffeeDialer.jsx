@@ -446,13 +446,13 @@ const CoffeeDialer = () => {
                             <div className="grid grid-cols-2 gap-2">
                                 <button
                                     onClick={() => handleTasteAdjust('sour', 'low')}
-                                    className="bg-cream/10 hover:bg-cream/20 text-cream py-2 rounded-lg text-sm font-medium transition-colors border border-cream/20"
+                                    className="bg-cream/10 hover:bg-cream/20 text-coffee-900 py-2 rounded-lg text-sm font-semibold transition-colors border border-cream/40"
                                 >
                                     Slightly (+20µm)
                                 </button>
                                 <button
                                     onClick={() => handleTasteAdjust('sour', 'high')}
-                                    className="bg-cream text-coffee-900 py-2 rounded-lg text-sm font-bold hover:bg-white transition-colors shadow-lg"
+                                    className="bg-cream text-coffee-900 py-2 rounded-lg text-sm font-semibold hover:bg-white transition-colors shadow-lg"
                                 >
                                     Very Sour (+75µm)
                                 </button>
@@ -465,13 +465,13 @@ const CoffeeDialer = () => {
                             <div className="grid grid-cols-2 gap-2">
                                 <button
                                     onClick={() => handleTasteAdjust('bitter', 'low')}
-                                    className="bg-coffee-700 hover:bg-coffee-600 text-coffee-100 py-2 rounded-lg text-sm font-medium transition-colors border border-coffee-600"
+                                    className="bg-coffee-700 hover:bg-coffee-600 text-coffee-100 py-2 rounded-lg text-sm font-semibold transition-colors border border-coffee-600"
                                 >
                                     Slightly (-20µm)
                                 </button>
                                 <button
                                     onClick={() => handleTasteAdjust('bitter', 'high')}
-                                    className="bg-coffee-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-coffee-500 transition-colors shadow-lg border border-coffee-500"
+                                    className="bg-coffee-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-coffee-500 transition-colors shadow-lg border border-coffee-500"
                                 >
                                     Very Bitter (-75µm)
                                 </button>
@@ -513,20 +513,22 @@ const CoffeeDialer = () => {
                         <label className="font-semibold text-coffee-800 flex items-center gap-2">
                             Rate this Brew
                         </label>
-                        <div className="flex gap-2">
-                            {[1, 2, 3, 4, 5].map((star) => (
+                        <div className="flex gap-1 flex-wrap justify-center">
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((star) => (
                                 <button
                                     key={star}
                                     onClick={() => setRating(star)}
-                                    className={`text-2xl transition-transform hover:scale-110 focus:outline-none ${star <= rating ? 'text-yellow-400' : 'text-gray-300'
+                                    className={`text-xl transition-transform hover:scale-110 focus:outline-none ${star <= rating ? 'text-yellow-400' : 'text-gray-300'
                                         }`}
                                 >
-                                    <Star fill={star <= rating ? "currentColor" : "none"} strokeWidth={star <= rating ? 0 : 2} />
+                                    <Star size={20} fill={star <= rating ? "currentColor" : "none"} strokeWidth={star <= rating ? 0 : 2} />
                                 </button>
                             ))}
-                            <span className="text-sm font-medium text-coffee-500 ml-2 self-center">
-                                {rating > 0 ? `${rating}/5` : 'No rating'}
-                            </span>
+                            <div className="w-full text-center mt-1">
+                                <span className="text-sm font-medium text-coffee-500">
+                                    {rating > 0 ? `${rating}/10` : 'No rating'}
+                                </span>
+                            </div>
                         </div>
                     </div>
 

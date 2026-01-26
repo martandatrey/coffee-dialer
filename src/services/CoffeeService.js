@@ -112,7 +112,7 @@ class CoffeeService {
 ⏳ Time: ${formatTime(time)}
 ⚙️ Grind: ${grindInfo}${filterInfo}
 ---------------------------
-📊 Rating: ${stars} (${rating}/5)
+📊 Rating: ${stars} (${rating}/10)
 📝 Notes: ${notes}
 💡 Pro Tip: ${proTip}
 ---------------------------
