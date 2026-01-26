@@ -63,7 +63,7 @@ class CoffeeService {
         const { method, dose, water, temp, time, grind } = params;
         const { rating, notes, shareUrl, filterType } = extraData;
 
-        const dialSetting = Math.round((grind - 100) / 10);
+
         const stars = "⭐".repeat(rating);
         const proTip = this.getProTip(method);
         const filterInfo = method.includes('AeroPress') ? `\n🔍 Filter: ${filterType}` : '';
@@ -74,7 +74,7 @@ class CoffeeService {
 💧 Water: ${water}ml (Ratio 1:${(water / dose).toFixed(1)})
 🔥 Temp: ${temp}°C
 ⏳ Time: ${formatTime(time)}
-⚙️ Grind: ${grind}µm (DF54 Dial: ~${dialSetting})${filterInfo}
+⚙️ Grind: ${grind}µm${filterInfo}
 ---------------------------
 📊 Rating: ${stars} (${rating}/5)
 📝 Notes: ${notes}
