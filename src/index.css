@@ -5,5 +5,17 @@
 @layer base {
   body {
     @apply bg-coffee-50 text-slate-850 font-sans antialiased;
+    line-height: 1.5;
+    font-weight: 400;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    background-image: url('./assets/coffee_bg.png');
+    background-color: #f8fafc; /* Fallback */
+    background-repeat: repeat;
+    background-size: 400px;
   }
 }
