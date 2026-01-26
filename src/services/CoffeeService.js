@@ -1,4 +1,5 @@
 import { PRESETS, PRO_TIPS, GRINDERS } from '../constants/coffeeData';
+import { TUNING } from '../config/tuningConfig';
 import { formatTime } from '../utils/formatters';
 
 class CoffeeService {
@@ -21,9 +22,9 @@ class CoffeeService {
     getFilterAdjustment(method, filterType) {
         const baseGrind = PRESETS[method].grind;
         if (filterType === 'Metal') {
-            return Math.max(100, baseGrind - 50); // Finer
+            return Math.max(TUNING.LIMITS.MIN_GRIND, baseGrind + TUNING.FILTERS.METAL_OFFSET); // Finer
         } else if (filterType === 'Both') {
-            return Math.min(1600, baseGrind + 50); // Coarser
+            return Math.min(TUNING.LIMITS.MAX_GRIND, baseGrind + TUNING.FILTERS.BOTH_OFFSET); // Coarser
         }
         return baseGrind;
     }
@@ -49,29 +50,29 @@ class CoffeeService {
 
         // Intensity Modifiers (Microns)
         const adjustments = {
-            'low': 20,
-            'normal': 50,
-            'high': 75
+            'low': TUNING.TASTE_ADJUSTMENT.INTENSITY.LOW,
+            'normal': TUNING.TASTE_ADJUSTMENT.INTENSITY.NORMAL,
+            'high': TUNING.TASTE_ADJUSTMENT.INTENSITY.HIGH
         };
-        const delta = adjustments[intensity] || 50;
+        const delta = adjustments[intensity] || TUNING.TASTE_ADJUSTMENT.INTENSITY.NORMAL;
 
         if (type === 'sour') {
             // Too Sour (Under-extracted) -> Extract MORE
-            if (grind > 100) {
-                newParams.grind = Math.max(100, grind - delta);
-            } else if (temp < 100) {
-                newParams.temp = temp + 2;
+            if (grind > TUNING.LIMITS.MIN_GRIND) {
+                newParams.grind = Math.max(TUNING.LIMITS.MIN_GRIND, grind - delta);
+            } else if (temp < TUNING.LIMITS.MAX_TEMP) {
+                newParams.temp = temp + TUNING.TASTE_ADJUSTMENT.TEMP_STEP;
             } else {
-                newParams.time = time + 15;
+                newParams.time = time + TUNING.TASTE_ADJUSTMENT.TIME_STEP;
             }
         } else if (type === 'bitter') {
             // Too Bitter (Over-extracted) -> Extract LESS
-            if (grind < 1600) {
-                newParams.grind = Math.min(1600, grind + delta);
-            } else if (temp > 80) {
-                newParams.temp = temp - 2;
+            if (grind < TUNING.LIMITS.MAX_GRIND) {
+                newParams.grind = Math.min(TUNING.LIMITS.MAX_GRIND, grind + delta);
+            } else if (temp > TUNING.LIMITS.MIN_TEMP) {
+                newParams.temp = temp - TUNING.TASTE_ADJUSTMENT.TEMP_STEP;
             } else {
-                newParams.time = time - 15;
+                newParams.time = time - TUNING.TASTE_ADJUSTMENT.TIME_STEP;
             }
         }
         return newParams;
