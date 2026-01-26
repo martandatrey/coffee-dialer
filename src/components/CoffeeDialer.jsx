@@ -167,7 +167,7 @@ const CoffeeDialer = () => {
     const currentRatio = water > 0 && dose > 0 ? (water / dose).toFixed(1) : '0';
 
     return (
-        <div className="min-h-screen bg-coffee-50 p-4 md:p-8 flex flex-col items-center font-sans text-slate-850">
+        <div className="min-h-screen p-4 md:p-8 flex flex-col items-center font-sans text-slate-850">
             <header className="mb-8 text-center w-full max-w-md">
                 <h1 className="text-3xl font-bold text-coffee-800 flex items-center justify-center gap-3 mb-4">
                     <Coffee className="w-8 h-8" />
@@ -175,16 +175,25 @@ const CoffeeDialer = () => {
                 </h1>
 
                 {/* Method Selector */}
-                <div className="bg-white p-2 rounded-xl shadow-md border border-coffee-100 flex justify-center">
-                    <select
-                        value={method}
-                        onChange={(e) => handleMethodChange(e.target.value)}
-                        className="w-full bg-transparent text-center font-bold text-coffee-700 text-lg outline-none cursor-pointer"
+                <div className="flex gap-2 justify-center items-center">
+                    <div className="bg-white p-2 rounded-xl shadow-md border border-coffee-100 flex-1">
+                        <select
+                            value={method}
+                            onChange={(e) => handleMethodChange(e.target.value)}
+                            className="w-full bg-transparent text-center font-bold text-coffee-700 text-lg outline-none cursor-pointer"
+                        >
+                            {Object.keys(PRESETS).map(m => (
+                                <option key={m} value={m}>{m}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <button
+                        onClick={() => handleMethodChange(method)}
+                        className="bg-white p-3 rounded-xl shadow-md border border-coffee-100 text-coffee-600 hover:text-coffee-800 hover:bg-coffee-50 transition-colors"
+                        title="Reset to Defaults"
                     >
-                        {Object.keys(PRESETS).map(m => (
-                            <option key={m} value={m}>{m}</option>
-                        ))}
-                    </select>
+                        <RotateCcw size={20} />
+                    </button>
                 </div>
             </header>
 
