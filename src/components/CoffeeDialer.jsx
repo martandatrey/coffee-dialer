@@ -256,6 +256,22 @@ const CoffeeDialer = () => {
                     </button>
                 </div>
 
+                {/* Grinder Selection */}
+                <div className="bg-coffee-50 p-4 rounded-xl border border-coffee-100 mb-4">
+                    <label className="block text-sm font-semibold text-coffee-700 mb-2">
+                        Grinder Model
+                    </label>
+                    <select
+                        value={selectedGrinder}
+                        onChange={(e) => setSelectedGrinder(e.target.value)}
+                        className="w-full p-2 bg-white border border-coffee-200 rounded-lg text-coffee-800 font-medium focus:outline-none focus:ring-2 focus:ring-coffee-500"
+                    >
+                        {Object.keys(GRINDERS).map((g) => (
+                            <option key={g} value={g}>{GRINDERS[g].name}</option>
+                        ))}
+                    </select>
+                </div>
+
                 {/* Roast Selector */}
                 <div className="flex items-center justify-center gap-2 bg-coffee-50 p-1 rounded-xl overflow-x-auto">
                     {['Light', 'Medium', 'Medium Dark', 'Dark'].map((r) => (
@@ -389,17 +405,7 @@ const CoffeeDialer = () => {
 
                     {/* Grind Size (Microns) */}
                     <div className="space-y-2">
-                        <div className="flex justify-end">
-                            <select
-                                value={selectedGrinder}
-                                onChange={(e) => setSelectedGrinder(e.target.value)}
-                                className="text-xs bg-white border border-coffee-200 text-coffee-600 rounded-lg px-2 py-1 outline-none font-medium cursor-pointer hover:border-coffee-400 focus:border-coffee-500 transition-colors"
-                            >
-                                {Object.entries(GRINDERS).map(([key, data]) => (
-                                    <option key={key} value={key}>{data.name}</option>
-                                ))}
-                            </select>
-                        </div>
+
                         <SliderControl
                             label="Grind Size"
                             icon={Settings}
@@ -436,7 +442,7 @@ const CoffeeDialer = () => {
                                 onClick={() => setTime(Math.max(SLIDER_CONFIG.TIME.min, time - SLIDER_CONFIG.TIME.step))}
                                 className="p-2 rounded-full bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-colors active:scale-95"
                             >
-                                <Minus size={16} />
+                                <Minus size={21} />
                             </button>
                             <input
                                 type="range"
@@ -451,7 +457,7 @@ const CoffeeDialer = () => {
                                 onClick={() => setTime(Math.min(SLIDER_CONFIG.TIME.max, time + SLIDER_CONFIG.TIME.step))}
                                 className="p-2 rounded-full bg-coffee-100 text-coffee-700 hover:bg-coffee-200 transition-colors active:scale-95"
                             >
-                                <Plus size={16} />
+                                <Plus size={21} />
                             </button>
                         </div>
 
