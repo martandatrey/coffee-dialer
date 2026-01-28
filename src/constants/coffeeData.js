@@ -132,7 +132,15 @@ export const GRINDERS = {
 
     // Kingrinder
     'K1': { name: 'Kingrinder K1', type: 'clicks', convert: (m) => Math.round(m / 8.6) },
-    'K6': { name: 'Kingrinder K6', type: 'clicks', convert: (m) => lookup(m, 'k6', v => Math.round(v * 60)) },
+    'K6': {
+        name: 'Kingrinder K6', type: 'clicks', convert: (m) => lookup(m, 'k6', v => {
+            const strVal = String(v);
+            const parts = strVal.split('.');
+            const rotations = parseInt(parts[0], 10) || 0;
+            const clicks = parseInt(parts[1] || '0', 10) || 0;
+            return rotations * 60 + clicks;
+        })
+    },
     'K_SERIES': { name: 'Kingrinder K0-K5', type: 'clicks', convert: (m) => Math.round(m / 18) },
 
     // Timemore
